@@ -15,6 +15,6 @@ variable "VERSION" {
 target "paperclip" {
   inherits   = ["docker-metadata-action"]
   context    = "."
-  dockerfile = "Dockerfile"
+  dockerfile = "apps/paperclipai/Dockerfile"
   platforms = ["linux/amd64", "linux/arm64"]
 }

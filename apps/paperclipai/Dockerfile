@@ -16,7 +16,7 @@ COPY adapters ./adapters
 COPY scripts ./scripts
 COPY tsconfig*.json ./
 COPY turbo.json ./
-COPY patches ./patches
+# COPY patches ./patches
 # include any other top-level files Paperclip needs, e.g. config/docs referenced by build
 COPY . .
 

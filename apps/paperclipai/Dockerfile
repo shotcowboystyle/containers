@@ -105,6 +105,7 @@ COPY --chown=node:node --from=build /app /app
 
 # COPY scripts/docker-entrypoint.sh /usr/local/bin/
 # RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+COPY . /
 
 ENV NODE_ENV=production \
   HOME=/paperclip \

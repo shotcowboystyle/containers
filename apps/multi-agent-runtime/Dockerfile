@@ -1,0 +1,62 @@
+# Agent runtime image — multi-CLI variant
+# Contains Claude Code, Codex, Gemini CLI, Pi, and OpenCode for cloud sandbox.
+# The container runs as a non-root user and is kept alive (sleep infinity);
+# the Paperclip server exec's agent CLI commands into it via the K8s exec API.
+#
+# Security:
+# - Non-root user (UID 1000) with no sudo/su
+# - No SUID/SGID binaries
+# - Go toolchain removed after OpenCode build (smaller image, less attack surface)
+# - npm cache purged after CLI installs
+
+FROM node:24-trixie-slim AS base
+
+# System dependencies — minimal set for agent operation
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    curl \
+    ca-certificates \
+    openssh-client \
+    jq \
+    && rm -rf /var/lib/apt/lists/* \
+    && find / -perm /6000 -type f -exec chmod a-s {} + 2>/dev/null || true
+
+# Install Go (for OpenCode build — removed after install to reduce surface)
+ENV GOVERSION=1.24.1
+RUN curl -fsSL "https://go.dev/dl/go${GOVERSION}.linux-$(dpkg --print-architecture).tar.gz" \
+    | tar -C /usr/local -xzf -
+ENV PATH="/usr/local/go/bin:/root/go/bin:${PATH}"
+
+# Install agent CLIs globally
+RUN npm install -g \
+    @anthropic-ai/claude-code@latest \
+    @openai/codex@latest \
+    @google/gemini-cli@latest \
+    @mariozechner/pi@latest \
+    2>/dev/null || true \
+    && npm cache clean --force
+
+# Install OpenCode (Go binary), then remove Go toolchain
+RUN go install github.com/opencode-ai/opencode@latest 2>/dev/null || true \
+    && cp /root/go/bin/opencode /usr/local/bin/opencode 2>/dev/null || true \
+    && rm -rf /usr/local/go /root/go /root/.cache/go-build
+
+# Reuse the existing node user (UID 1000) from the base image
+# Pre-create workspace and agent home mount points
+RUN mkdir -p /workspaces /home/agents && chown -R node:node /workspaces /home/agents
+
+# Git config for agent commits
+RUN git config --system user.name "Paperclip Agent" \
+    && git config --system user.email "agent@shotcowboystyle.inc" \
+    && git config --system init.defaultBranch main \
+    && git config --system --add safe.directory '*'
+
+# Switch to non-root user — all exec'd commands run as this user
+USER node
+WORKDIR /workspaces
+
+# No exposed ports — sandbox pods don't serve traffic
+# Ingress is blocked by NetworkPolicy; only egress to HTTPS/DNS is allowed
+
+# Default: kept alive for exec. The Paperclip server sends commands via K8s exec API.
+CMD ["sleep", "infinity"]

@@ -126,5 +126,5 @@ EXPOSE 3100
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
   CMD curl -fsS http://localhost:3100/api/health || exit 1
 
-ENTRYPOINT ["tini", "--", "/entrypoint.sh"]
+ENTRYPOINT ["tini", "-s", "--", "/entrypoint.sh"]
 CMD ["node", "--conditions=production", "server/dist/index.js"]

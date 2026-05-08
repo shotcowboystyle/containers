@@ -70,9 +70,12 @@ RUN npm install --global --omit=dev \
     @openai/codex@0.128.0 \
     opencode-ai@1.14.40 \
     @mariozechner/pi-coding-agent@0.73.0 \
-  && curl https://cursor.com/install -fsS | bash \
   && npm cache clean --force \
-  && rm -rf /tmp/*
+  && rm -rf /tmp/* \
+  && if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
+       curl https://cursor.com/install -fsS | bash \
+       && cp -r /root/.cursor/bin/* /usr/local/bin/; \
+     fi
 
 # ── Stage 5: production ──────────────────────────────────────
 FROM node:24-trixie-slim AS production
@@ -109,7 +112,6 @@ RUN corepack enable
 # Copy pre-built agent CLIs from separate cached stage
 COPY --from=agent-clis /usr/local/lib/node_modules /usr/local/lib/node_modules
 COPY --from=agent-clis /usr/local/bin/ /usr/local/bin/
-COPY --from=agent-clis /root/.cursor/bin/ /usr/local/bin/
 
 RUN mkdir -p /paperclip && chown node:node /paperclip
 RUN chown -R node:node /home/node

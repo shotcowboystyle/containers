@@ -103,8 +103,8 @@ WORKDIR /app
 
 COPY --chown=node:node --from=build /app /app
 
-COPY entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
+COPY ./entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 ENV NODE_ENV=production \
   HOME=/paperclip \

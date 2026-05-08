@@ -110,6 +110,7 @@ COPY --from=agent-clis /usr/local/lib/node_modules /usr/local/lib/node_modules
 COPY --from=agent-clis /usr/local/bin/ /usr/local/bin/
 
 RUN mkdir -p /paperclip && chown node:node /paperclip
+RUN chown -R node:node /home/node
 
 WORKDIR /app
 

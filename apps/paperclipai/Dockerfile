@@ -45,7 +45,23 @@ COPY defaults/home/ /home/node/.config/
 COPY --from=deps /app /app
 COPY . .
 RUN pnpm -r build \
-  && test -f server/dist/index.js || (echo "ERROR: server build output missing" && exit 1)
+  && test -f server/dist/index.js || (echo "ERROR: server build output missing" && exit 1) \
+  && node -e ' \
+    const fs = require("fs"); \
+    const path = require("path"); \
+    for (const dir of fs.readdirSync("packages", { withFileTypes: true })) { \
+      if (!dir.isDirectory()) continue; \
+      const pjPath = path.join("packages", dir.name, "package.json"); \
+      if (!fs.existsSync(pjPath)) continue; \
+      const pj = JSON.parse(fs.readFileSync(pjPath, "utf8")); \
+      if (!pj.publishConfig) continue; \
+      for (const [key, val] of Object.entries(pj.publishConfig)) { \
+        pj[key] = val; \
+      } \
+      fs.writeFileSync(pjPath, JSON.stringify(pj, null, 2) + "\n"); \
+      console.log("Applied publishConfig overlay:", pjPath); \
+    } \
+  '
 
 # ── Stage 4: agent CLIs ──────────────────────────────────────
 # Separate stage so agent CLI install is cached independently.

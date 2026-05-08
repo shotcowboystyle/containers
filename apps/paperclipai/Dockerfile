@@ -95,6 +95,7 @@ RUN apt-get update \
     git \
     nano \
     tini \
+    vim \
     wget \
     ripgrep \
     rustc \
@@ -108,6 +109,7 @@ RUN corepack enable
 # Copy pre-built agent CLIs from separate cached stage
 COPY --from=agent-clis /usr/local/lib/node_modules /usr/local/lib/node_modules
 COPY --from=agent-clis /usr/local/bin/ /usr/local/bin/
+COPY --from=agent-clis /root/.cursor/bin/ /usr/local/bin/
 
 RUN mkdir -p /paperclip && chown node:node /paperclip
 RUN chown -R node:node /home/node
@@ -138,6 +140,8 @@ EXPOSE 3100
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
   CMD curl -fsS http://localhost:3100/api/health || exit 1
+
+USER node
 
 ENTRYPOINT ["tini", "-s", "--", "/entrypoint.sh"]
 CMD ["node", "--conditions=production", "server/dist/index.js"]

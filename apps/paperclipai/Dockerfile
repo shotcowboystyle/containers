@@ -18,7 +18,7 @@ RUN apt-get update \
 
 RUN curl https://cursor.com/install -fsS | bash \
     && mkdir -p /opt/extras/bin \
-    && cp /root/.cursor/bin/cursor /opt/extras/bin/
+    && cp $HOME/.local/bin/cursor /opt/extras/bin/
 
 # ── Stage 2: production ───────────────────────────────────────────────────────
 FROM ghcr.io/paperclipai/paperclip:${VERSION} AS production

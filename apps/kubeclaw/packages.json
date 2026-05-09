@@ -23,7 +23,9 @@
     "yt-dlp",
     "tesseract-ocr"
   ],
-  "goPackages": [],
+  "goPackages": [
+    "github.com/fullstorydev/grpcurl/cmd/grpcurl@latest"
+  ],
   "npmGlobalPackages": [
     "clawhub",
     "mcporter",
@@ -42,6 +44,25 @@
       "enabled": true,
       "version": "2.77.0",
       "downloadUrlTemplate": "https://github.com/cli/cli/releases/download/v{{version}}/gh_{{version}}_linux_{{arch}}.tar.gz"
+    },
+    "jira": {
+      "enabled": true,
+      "version": "1.7.0",
+      "downloadUrlTemplate": "https://github.com/ankitpokhrel/jira-cli/releases/download/v{{version}}/jira_{{version}}_linux_{{arch}}.tar.gz"
+    },
+    "linear": {
+      "enabled": true,
+      "version": "1.10.0",
+      "downloadUrlTemplate": "https://github.com/schpet/linear-cli/releases/download/v{{version}}/linear-{{arch}}-unknown-linux-gnu.tar.xz"
+    },
+    "asana": {
+      "enabled": true,
+      "version": "1.2.0",
+      "downloadUrlTemplate": "https://github.com/timwehrle/asana/releases/download/v{{version}}/asana_Linux_{{arch}}.tar.gz"
+    },
+    "trello": {
+      "enabled": true,
+      "version": "1.5.0"
     }
   },
   "qmd": {

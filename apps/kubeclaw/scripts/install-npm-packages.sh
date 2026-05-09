@@ -2,8 +2,8 @@
 set -eu
 
 PACKAGES_FILE="${PACKAGES_FILE:-/workspace/packages.json}"
-OUT_PREFIX="${OUT_PREFIX:-/opt/kubeclaw/npm-global}"
-OUT_BIN_DIR="${OUT_BIN_DIR:-/opt/kubeclaw/bin}"
+OUT_PREFIX="${OUT_PREFIX:-/home/node/.npm-global}"
+OUT_BIN_DIR="${OUT_BIN_DIR:-/home/node/.local/bin}"
 
 count="$(node -e 'const fs=require("fs"); const p=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); process.stdout.write(String((p.npmGlobalPackages||[]).length));' "$PACKAGES_FILE")"
 if [ "$count" = "0" ]; then

@@ -2,8 +2,8 @@
 set -eu
 
 PACKAGES_FILE="${PACKAGES_FILE:-/workspace/packages.json}"
-OUT_QMD_DIR="${OUT_QMD_DIR:-/opt/kubeclaw/qmd-bin}"
-OUT_QMD_PREFIX="${OUT_QMD_PREFIX:-/opt/kubeclaw/qmd}"
+OUT_QMD_DIR="${OUT_QMD_DIR:-/home/node/qmd-bin}"
+OUT_QMD_PREFIX="${OUT_QMD_PREFIX:-/home/node/qmd}"
 
 enabled="$(node -e 'const fs=require("fs"); const p=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); process.stdout.write(String(Boolean(p.qmd && p.qmd.enabled)));' "$PACKAGES_FILE")"
 if [ "$enabled" != "true" ]; then

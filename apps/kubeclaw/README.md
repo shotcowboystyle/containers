@@ -12,11 +12,11 @@ This image extends the upstream OpenClaw image and bakes in KubeClaw-specific ru
 All package declarations live in `images/kubeclaw/packages.json`:
 
 - `linuxPackages`: OS packages installed in the final image (`apk` or `apt` depending on base image)
-- `goPackages`: `go install` package specs installed into `/opt/kubeclaw/bin`
-- `npmGlobalPackages`: npm packages installed into `/opt/kubeclaw/npm-global` with binaries linked into `/opt/kubeclaw/bin`
+- `goPackages`: `go install` package specs installed into `/home/node/.local/bin`
+- `npmGlobalPackages`: npm packages installed into `/home/node/.npm-global` with binaries linked into `/home/node/.local/bin`
 - `skillsSh`: verified script downloads executed during build (`url` + required `sha256`)
 - `cli`: curated binary installers (`gh`, `jira`, `linear`, `asana`, `trello`)
-- `qmd`: QMD package source + required npm integrity hash baked into `/opt/kubeclaw/qmd-bin`
+- `qmd`: QMD package source + required npm integrity hash baked into `/home/node/qmd-bin`
 
 Example:
 
@@ -39,5 +39,5 @@ Example:
 `images/kubeclaw/scripts/bootstrap.sh` runs before the OpenClaw Gateway process and:
 
 - applies `config.desired` using `merge` or `overwrite` mode
-- syncs baked skillstacks from `/opt/kubeclaw/skillstacks` into `/home/node/.openclaw/skills` (and prunes stale managed stack skills)
+- syncs baked skillstacks from `/home/node/.local/skillstacks` into `/home/node/.openclaw/skills` (and prunes stale managed stack skills)
 - generates and merges `skills.*` config so OpenClaw knows what to load

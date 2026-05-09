@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-PACKAGES_FILE="${PACKAGES_FILE:-/opt/kubeclaw/packages.json}"
+PACKAGES_FILE="${PACKAGES_FILE:-/workspace/packages.json}"
 
 linux_packages="$(node -e '
   const fs = require("fs");

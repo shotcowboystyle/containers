@@ -6,7 +6,7 @@ ARG VERSION=latest
 # ── Stage 1: extra agent CLIs ─────────────────────────────────────────────────
 # Install only the CLIs absent from ghcr.io/paperclipai/paperclip.
 # That image already provides: @anthropic-ai/claude-code, @openai/codex, opencode-ai
-FROM node:lts-trixie-slim AS agent-clis
+FROM node:24-trixie AS agent-clis
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends ca-certificates curl \

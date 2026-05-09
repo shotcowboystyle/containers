@@ -1,38 +1,7 @@
 {
-  "linuxPackages": [
-    "git",
-    "ripgrep",
-    "sqlite3",
-    "build-essential",
-    "cmake",
-    "pkg-config",
-    "xvfb",
-    "xauth",
-    "libglu1-mesa",
-    "ffmpeg",
-    "gnupg",
-    "jq",
-    "yq",
-    "xz-utils",
-    "unzip",
-    "zip",
-    "imagemagick",
-    "rsync",
-    "tmux",
-    "vim",
-    "yt-dlp",
-    "tesseract-ocr"
-  ],
-  "goPackages": [
-    "github.com/fullstorydev/grpcurl/cmd/grpcurl@latest"
-  ],
-  "npmGlobalPackages": [
-    "clawhub",
-    "mcporter",
-    "@playwright/mcp@0.0.68",
-    "@steipete/summarize",
-    "@googleworkspace/cli"
-  ],
+  "linuxPackages": [],
+  "goPackages": [],
+  "npmGlobalPackages": [],
   "uvPackages": [
     "nano-pdf",
     "openai-whisper"
@@ -46,22 +15,22 @@
       "downloadUrlTemplate": "https://github.com/cli/cli/releases/download/v{{version}}/gh_{{version}}_linux_{{arch}}.tar.gz"
     },
     "jira": {
-      "enabled": true,
+      "enabled": false,
       "version": "1.7.0",
       "downloadUrlTemplate": "https://github.com/ankitpokhrel/jira-cli/releases/download/v{{version}}/jira_{{version}}_linux_{{arch}}.tar.gz"
     },
     "linear": {
-      "enabled": true,
+      "enabled": false,
       "version": "1.10.0",
       "downloadUrlTemplate": "https://github.com/schpet/linear-cli/releases/download/v{{version}}/linear-{{arch}}-unknown-linux-gnu.tar.xz"
     },
     "asana": {
-      "enabled": true,
+      "enabled": false,
       "version": "1.2.0",
       "downloadUrlTemplate": "https://github.com/timwehrle/asana/releases/download/v{{version}}/asana_Linux_{{arch}}.tar.gz"
     },
     "trello": {
-      "enabled": true,
+      "enabled": false,
       "version": "1.5.0"
     }
   },

@@ -2,8 +2,8 @@
 set -eu
 
 PACKAGES_FILE="${PACKAGES_FILE:-/workspace/packages.json}"
-OUT_PREFIX="${OUT_PREFIX:-/out/opt/kubeclaw/npm-global}"
-OUT_BIN_DIR="${OUT_BIN_DIR:-/out/opt/kubeclaw/bin}"
+OUT_PREFIX="${OUT_PREFIX:-/opt/kubeclaw/npm-global}"
+OUT_BIN_DIR="${OUT_BIN_DIR:-/opt/kubeclaw/bin}"
 
 count="$(node -e 'const fs=require("fs"); const p=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); process.stdout.write(String((p.npmGlobalPackages||[]).length));' "$PACKAGES_FILE")"
 if [ "$count" = "0" ]; then
@@ -26,6 +26,7 @@ done
 if [ -d "$OUT_PREFIX/node_modules/.bin" ]; then
   for bin in "$OUT_PREFIX"/node_modules/.bin/*; do
     [ -f "$bin" ] || continue
-    ln -sf "$bin" "$OUT_BIN_DIR/$(basename "$bin")"
+    target_name="$(basename "$bin")"
+    ln -sf "../npm-global/node_modules/.bin/$target_name" "$OUT_BIN_DIR/$target_name"
   done
 fi

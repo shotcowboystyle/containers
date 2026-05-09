@@ -2,7 +2,7 @@
 set -eu
 
 PACKAGES_FILE="${PACKAGES_FILE:-/workspace/packages.json}"
-OUT_BIN_DIR="${OUT_BIN_DIR:-/out/opt/kubeclaw/bin}"
+OUT_BIN_DIR="${OUT_BIN_DIR:-/opt/kubeclaw/bin}"
 TARGETARCH="${TARGETARCH:-amd64}"
 
 mkdir -p "$OUT_BIN_DIR"

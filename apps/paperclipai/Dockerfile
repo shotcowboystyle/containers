@@ -16,14 +16,9 @@ RUN apt-get update \
     @mariozechner/pi-coding-agent@0.73.0 \
   && npm cache clean --force
 
-# Cursor is amd64-only; skip silently on other architectures.
-# Note: curl-pipe-sh is the only supported install method upstream provides.
-ARG TARGETARCH
-RUN if [ "${TARGETARCH}" = "amd64" ]; then \
-      curl https://cursor.com/install -fsS | bash \
-      && mkdir -p /opt/extras/bin \
-      && cp /root/.cursor/bin/cursor /opt/extras/bin/; \
-    fi
+RUN curl https://cursor.com/install -fsS | bash \
+    && mkdir -p /opt/extras/bin \
+    && cp /root/.cursor/bin/cursor /opt/extras/bin/
 
 # ── Stage 2: production ───────────────────────────────────────────────────────
 FROM ghcr.io/paperclipai/paperclip:${VERSION} AS production

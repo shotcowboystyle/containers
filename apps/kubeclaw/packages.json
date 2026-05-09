@@ -1,0 +1,52 @@
+{
+  "linuxPackages": [
+    "git",
+    "ripgrep",
+    "sqlite3",
+    "build-essential",
+    "cmake",
+    "pkg-config",
+    "xvfb",
+    "xauth",
+    "libglu1-mesa",
+    "ffmpeg",
+    "gnupg",
+    "jq",
+    "yq",
+    "xz-utils",
+    "unzip",
+    "zip",
+    "imagemagick",
+    "rsync",
+    "tmux",
+    "vim",
+    "yt-dlp",
+    "tesseract-ocr"
+  ],
+  "goPackages": [],
+  "npmGlobalPackages": [
+    "clawhub",
+    "mcporter",
+    "@playwright/mcp@0.0.68",
+    "@steipete/summarize",
+    "@googleworkspace/cli"
+  ],
+  "uvPackages": [
+    "nano-pdf",
+    "openai-whisper"
+  ],
+  "cargoPackages": [],
+  "skillsSh": [],
+  "cli": {
+    "gh": {
+      "enabled": true,
+      "version": "2.77.0",
+      "downloadUrlTemplate": "https://github.com/cli/cli/releases/download/v{{version}}/gh_{{version}}_linux_{{arch}}.tar.gz"
+    }
+  },
+  "qmd": {
+    "enabled": true,
+    "packageUrl": "@tobilu/qmd@2.0.1",
+    "integrity": "sha512-v0fqksHGk2qSo8ztSshIB8Mkfdtdk+qKdKoEvsZ972fgvU7UCO0DSI+6xQMiSznBEbf89PRQVhz30yTIgRG3iw=="
+  }
+}

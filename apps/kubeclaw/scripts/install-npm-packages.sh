@@ -27,6 +27,6 @@ if [ -d "$OUT_PREFIX/node_modules/.bin" ]; then
   for bin in "$OUT_PREFIX"/node_modules/.bin/*; do
     [ -f "$bin" ] || continue
     target_name="$(basename "$bin")"
-    ln -sf "../npm-global/node_modules/.bin/$target_name" "$OUT_BIN_DIR/$target_name"
+    ln -sf "$OUT_PREFIX/node_modules/.bin/$target_name" "$OUT_BIN_DIR/$target_name"
   done
 fi

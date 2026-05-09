@@ -15,11 +15,11 @@ RUN PACKAGES_FILE=/workspace/packages.json OUT_PREFIX=/home/node/.npm-global OUT
 FROM golang:1.26.3-alpine AS go-builder
 WORKDIR /workspace
 RUN apk add --no-cache nodejs
-RUN mkdir -p /home/node/go
+RUN mkdir -p /home/node/go/bin
 COPY packages.json /workspace/packages.json
 COPY scripts/install-go-packages.sh /workspace/install-go-packages.sh
 RUN chmod +x /workspace/install-go-packages.sh
-RUN PACKAGES_FILE=/workspace/packages.json OUT_BIN_DIR=/home/node/go /workspace/install-go-packages.sh
+RUN PACKAGES_FILE=/workspace/packages.json OUT_BIN_DIR=/home/node/go/bin /workspace/install-go-packages.sh
 
 FROM node:24 AS qmd-builder
 WORKDIR /workspace
@@ -56,7 +56,8 @@ USER root
 
 COPY packages.json /home/node/packages.json
 COPY scripts/install-skills-sh.sh /home/node/.local/bin/install-skills-sh.sh
-RUN chmod +x /home/node/.local/bin/install-skills-sh.sh && /home/node/.local/bin/install-skills-sh.sh
+RUN chmod +x /home/node/.local/bin/install-skills-sh.sh \
+    && PACKAGES_FILE=/home/node/packages.json /home/node/.local/bin/install-skills-sh.sh
 RUN npm install --prefix /home/node/.local/deps json5@2.2.3 --no-save --no-audit --no-fund
 
 COPY --from=tools-builder /home/node/.local/bin /home/node/.local/bin
@@ -74,6 +75,8 @@ COPY scripts/render-skills-config.js /home/node/.local/bin/render-skills-config.
 COPY charts/kubeclaw/skillstacks /home/node/.local/skillstacks
 
 RUN chmod 0555 /home/node/.local/bin/bootstrap.sh /home/node/.local/bin/merge-json5.js /home/node/.local/bin/render-skills-config.js
+
+RUN chown -R 1000:1000 /home/node
 
 ENV PATH="/home/node/.npm-global/bin:/home/node/.cargo/bin:/home/node/go/bin:/home/node/.uv-global/bin:/home/node/qmd-bin:/home/node/.local/bin:${PATH}"
 

@@ -31,5 +31,5 @@ for bin in "$OUT_PREFIX"/bin/*; do
   case "$name" in
     python*|pip*|activate*) continue ;;
   esac
-  ln -sf "../uv-global/bin/$name" "$OUT_BIN_DIR/$name"
+  ln -sf "$OUT_PREFIX/bin/$name" "$OUT_BIN_DIR/$name"
 done

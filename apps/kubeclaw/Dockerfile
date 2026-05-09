@@ -4,77 +4,77 @@ FROM node:24 AS tools-builder
 ARG TARGETARCH
 WORKDIR /workspace
 RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates tar xz-utils && rm -rf /var/lib/apt/lists/*
-RUN mkdir -p /opt/kubeclaw/bin /opt/kubeclaw/npm-global
+RUN mkdir -p /home/node/.local/bin /home/node/.npm-global
 COPY packages.json /workspace/packages.json
 COPY scripts/install-tools.sh /workspace/install-tools.sh
 COPY scripts/install-npm-packages.sh /workspace/install-npm-packages.sh
 RUN chmod +x /workspace/install-tools.sh /workspace/install-npm-packages.sh
-RUN TARGETARCH=${TARGETARCH} PACKAGES_FILE=/workspace/packages.json OUT_BIN_DIR=/opt/kubeclaw/bin /workspace/install-tools.sh
-RUN PACKAGES_FILE=/workspace/packages.json OUT_PREFIX=/opt/kubeclaw/npm-global OUT_BIN_DIR=/opt/kubeclaw/bin /workspace/install-npm-packages.sh
+RUN TARGETARCH=${TARGETARCH} PACKAGES_FILE=/workspace/packages.json OUT_BIN_DIR=/home/node/.local/bin /workspace/install-tools.sh
+RUN PACKAGES_FILE=/workspace/packages.json OUT_PREFIX=/home/node/.npm-global OUT_BIN_DIR=/home/node/.local/bin /workspace/install-npm-packages.sh
 
 FROM golang:1.26.3-alpine AS go-builder
 WORKDIR /workspace
 RUN apk add --no-cache nodejs
-RUN mkdir -p /opt/kubeclaw/bin
+RUN mkdir -p /home/node/go
 COPY packages.json /workspace/packages.json
 COPY scripts/install-go-packages.sh /workspace/install-go-packages.sh
 RUN chmod +x /workspace/install-go-packages.sh
-RUN PACKAGES_FILE=/workspace/packages.json OUT_BIN_DIR=/opt/kubeclaw/bin /workspace/install-go-packages.sh
+RUN PACKAGES_FILE=/workspace/packages.json OUT_BIN_DIR=/home/node/go /workspace/install-go-packages.sh
 
 FROM node:24 AS qmd-builder
 WORKDIR /workspace
 RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates git cmake python3 make g++ && rm -rf /var/lib/apt/lists/*
-RUN mkdir -p /opt/kubeclaw/qmd /opt/kubeclaw/qmd-bin
+RUN mkdir -p /home/node/qmd /home/node/qmd-bin
 COPY packages.json /workspace/packages.json
 COPY scripts/install-qmd.sh /workspace/install-qmd.sh
 RUN chmod +x /workspace/install-qmd.sh
-RUN PACKAGES_FILE=/workspace/packages.json OUT_QMD_PREFIX=/opt/kubeclaw/qmd OUT_QMD_DIR=/opt/kubeclaw/qmd-bin /workspace/install-qmd.sh
+RUN PACKAGES_FILE=/workspace/packages.json OUT_QMD_PREFIX=/home/node/qmd OUT_QMD_DIR=/home/node/qmd-bin /workspace/install-qmd.sh
 
 FROM ghcr.io/astral-sh/uv:latest AS uv-bin
 
 FROM python:3.13-slim AS uv-builder
 WORKDIR /workspace
 RUN apt-get update && apt-get install -y --no-install-recommends nodejs npm && rm -rf /var/lib/apt/lists/*
-COPY --from=uv-bin /uv /usr/local/bin/uv
-RUN mkdir -p /opt/kubeclaw/uv-global /opt/kubeclaw/bin
+COPY --from=uv-bin /uv /home/node/.local/bin/uv
+RUN mkdir -p /home/node/.uv-global /home/node/.local/bin
 COPY packages.json /workspace/packages.json
 COPY scripts/install-uv-packages.sh /workspace/install-uv-packages.sh
 RUN chmod +x /workspace/install-uv-packages.sh
-RUN PACKAGES_FILE=/workspace/packages.json OUT_PREFIX=/opt/kubeclaw/uv-global OUT_BIN_DIR=/opt/kubeclaw/bin /workspace/install-uv-packages.sh
+RUN PACKAGES_FILE=/workspace/packages.json OUT_PREFIX=/home/node/.uv-global OUT_BIN_DIR=/home/node/.local/bin /workspace/install-uv-packages.sh
 
 FROM rust:1.95.0-slim AS rust-builder
 WORKDIR /workspace
 RUN apt-get update && apt-get install -y --no-install-recommends nodejs npm pkg-config libssl-dev && rm -rf /var/lib/apt/lists/*
-RUN mkdir -p /opt/kubeclaw/bin
+RUN mkdir -p /home/node/.cargo
 COPY packages.json /workspace/packages.json
 COPY scripts/install-rust-packages.sh /workspace/install-rust-packages.sh
 RUN chmod +x /workspace/install-rust-packages.sh
-RUN PACKAGES_FILE=/workspace/packages.json OUT_BIN_DIR=/opt/kubeclaw/bin /workspace/install-rust-packages.sh
+RUN PACKAGES_FILE=/workspace/packages.json OUT_BIN_DIR=/home/node/.cargo/bin /workspace/install-rust-packages.sh
 
 FROM ${OPENCLAW_IMAGE}
 USER root
 
-COPY packages.json /opt/kubeclaw/packages.json
-COPY scripts/install-skills-sh.sh /opt/kubeclaw/bin/install-skills-sh.sh
-RUN chmod +x /opt/kubeclaw/bin/install-skills-sh.sh && /opt/kubeclaw/bin/install-skills-sh.sh
-RUN npm install --prefix /opt/kubeclaw/deps json5@2.2.3 --no-save --no-audit --no-fund
+COPY packages.json /home/node/packages.json
+COPY scripts/install-skills-sh.sh /home/node/.local/bin/install-skills-sh.sh
+RUN chmod +x /home/node/.local/bin/install-skills-sh.sh && /home/node/.local/bin/install-skills-sh.sh
+RUN npm install --prefix /home/node/.local/deps json5@2.2.3 --no-save --no-audit --no-fund
 
-COPY --from=tools-builder /opt/kubeclaw/bin /opt/kubeclaw/bin
-COPY --from=tools-builder /opt/kubeclaw/npm-global /opt/kubeclaw/npm-global
-COPY --from=go-builder /opt/kubeclaw/bin /opt/kubeclaw/bin
-COPY --from=qmd-builder /opt/kubeclaw/qmd /opt/kubeclaw/qmd
-COPY --from=qmd-builder /opt/kubeclaw/qmd-bin /opt/kubeclaw/qmd-bin
-COPY --from=uv-builder /opt/kubeclaw/uv-global /opt/kubeclaw/uv-global
-COPY --from=uv-builder /opt/kubeclaw/bin /opt/kubeclaw/bin
-COPY --from=rust-builder /opt/kubeclaw/bin /opt/kubeclaw/bin
+COPY --from=tools-builder /home/node/.local/bin /home/node/.local/bin
+COPY --from=tools-builder /home/node/.npm-global /home/node/.npm-global
+COPY --from=go-builder /home/node/go /home/node/go
+COPY --from=qmd-builder /home/node/qmd /home/node/qmd
+COPY --from=qmd-builder /home/node/qmd-bin /home/node/qmd-bin
+COPY --from=uv-builder /home/node/.uv-global /home/node/.uv-global
+COPY --from=uv-builder /home/node/.local/bin /home/node/.local/bin
+COPY --from=rust-builder /home/node/.cargo /home/node/.cargo
 
-COPY scripts/bootstrap.sh /opt/kubeclaw/bin/bootstrap.sh
-COPY scripts/merge-json5.js /opt/kubeclaw/bin/merge-json5.js
-COPY scripts/render-skills-config.js /opt/kubeclaw/bin/render-skills-config.js
-COPY charts/kubeclaw/skillstacks /opt/kubeclaw/skillstacks
+COPY scripts/bootstrap.sh /home/node/.local/bin/bootstrap.sh
+COPY scripts/merge-json5.js /home/node/.local/bin/merge-json5.js
+COPY scripts/render-skills-config.js /home/node/.local/bin/render-skills-config.js
+COPY charts/kubeclaw/skillstacks /home/node/.local/skillstacks
 
-RUN chmod 0555 /opt/kubeclaw/bin/bootstrap.sh /opt/kubeclaw/bin/merge-json5.js /opt/kubeclaw/bin/render-skills-config.js
+RUN chmod 0555 /home/node/.local/bin/bootstrap.sh /home/node/.local/bin/merge-json5.js /home/node/.local/bin/render-skills-config.js
 
-ENV PATH="/opt/kubeclaw/uv-global/bin:/opt/kubeclaw/qmd-bin:/opt/kubeclaw/bin:${PATH}"
+ENV PATH="/home/node/.npm-global/bin:/home/node/.cargo/bin:/home/node/go/bin:/home/node/.uv-global/bin:/home/node/qmd-bin:/home/node/.local/bin:${PATH}"
 
 USER 1000

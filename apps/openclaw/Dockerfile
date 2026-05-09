@@ -1,17 +1,23 @@
 # syntax=docker/dockerfile:1
+
+# renovate: datasource=docker depName=ghcr.io/astral-sh/uv
+FROM ghcr.io/astral-sh/uv:0.7.5 AS uv-bin
+
 ARG BASE_REGISTRY=ghcr.io \
     BASE_OWNER=openclaw \
     BASE_REPO=openclaw \
-    BASE_TAG=latest
-ARG BASE_REF=${BASE_REGISTRY}/${BASE_OWNER}/${BASE_REPO}:${BASE_TAG}
+    BASE_TAG=2026.5.7-slim \
+    BASE_DIGEST=sha256:1af3f457a2d5a1d210f4d95634fa5da6e23f9c0ac7b52ef4bc38e2ecf09704fd
+ARG BASE_REF=${BASE_REGISTRY}/${BASE_OWNER}/${BASE_REPO}:${BASE_TAG}@${BASE_DIGEST}
 
 FROM ${BASE_REF}
+
+LABEL org.opencontainers.image.description="OpenClaw with Python/uv, Go, Rust, Playwright+Chromium, and MCP tools"
 
 ARG EXTRA_APT_PKGS="" \
     EXTRA_NPM_LOCAL_PKGS="" \
     EXTRA_NPM_GLOBAL_PKGS="" \
-    EXTRA_PIP_PKGS="" \
-    UV_VERSION=0.7.5
+    EXTRA_PIP_PKGS=""
 
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
@@ -21,12 +27,12 @@ WORKDIR /app
 
 ENV PLAYWRIGHT_BROWSERS_PATH=/home/node/.cache/ms-playwright \
     TERM=xterm-256color \
-    PYTHONUSERBASE=/home/node/.local \
     NPM_CONFIG_PREFIX=/home/node/.npm-global \
     GOPATH=/home/node/go \
     RUSTUP_HOME=/home/node/.rustup \
     CARGO_HOME=/home/node/.cargo \
-    PATH="/home/node/.local/bin:/home/node/.npm-global/bin:/home/node/go/bin:/home/node/.cargo/bin:${PATH}"
+    VIRTUAL_ENV=/home/node/.venv \
+    PATH="/home/node/.venv/bin:/home/node/.local/bin:/home/node/.npm-global/bin:/home/node/go/bin:/home/node/.cargo/bin:${PATH}"
 
 # apt install
 RUN --mount=type=cache,target=/var/lib/apt,id=apt-lib \
@@ -36,7 +42,6 @@ RUN --mount=type=cache,target=/var/lib/apt,id=apt-lib \
     && apt-get install -y --no-install-recommends \
         sqlite3 \
         python3 python3-pip python-is-python3 \
-        build-essential cmake pkg-config \
         golang \
         rustc cargo \
         xvfb \
@@ -45,7 +50,6 @@ RUN --mount=type=cache,target=/var/lib/apt,id=apt-lib \
         libglu1-mesa \
         gnupg \
         git curl wget jq xz-utils unzip zip \
-        libffi-dev libssl-dev zlib1g-dev \
         imagemagick \
         ripgrep \
         rsync \
@@ -56,22 +60,21 @@ RUN --mount=type=cache,target=/var/lib/apt,id=apt-lib \
         tesseract-ocr \
         ${EXTRA_APT_PKGS}
 
+COPY --from=uv-bin /uv /usr/local/bin/uv
+
 # npm global install
-RUN --mount=type=cache,target=/home/node/.npm,id=npm-cache \
-    npm i -g clawhub mcporter @playwright/mcp@0.0.68 @steipete/summarize @googleworkspace/cli ${EXTRA_NPM_GLOBAL_PKGS} \
+# clawhub omitted — already present in the upstream openclaw base image
+RUN --mount=type=cache,target=/root/.npm,id=npm-cache \
+    npm i -g mcporter @playwright/mcp@0.0.68 @steipete/summarize @googleworkspace/cli ${EXTRA_NPM_GLOBAL_PKGS} \
     && if [[ -n "${EXTRA_NPM_LOCAL_PKGS}" ]]; then \
         npm i ${EXTRA_NPM_LOCAL_PKGS}; \
     fi \
     && chown -R node:node /home/node/.npm-global
 
-# install uv (pinned version, direct to /usr/local/bin)
-RUN --mount=type=cache,target=/home/node/.cache/uv,id=uv-cache,sharing=locked \
-    curl -LsSf "https://astral.sh/uv/${UV_VERSION}/install.sh" | UV_INSTALL_DIR=/usr/local/bin sh
-
 # install python deps into a venv owned by node
-RUN --mount=type=cache,target=/home/node/.cache/uv,id=uv-cache,sharing=locked \
-    PIP_USER=0 uv venv /home/node/.venv \
-    && PIP_USER=0 uv pip install --python /home/node/.venv/bin/python nano-pdf lancedb ${EXTRA_PIP_PKGS} \
+RUN --mount=type=cache,target=/root/.cache/uv,id=uv-cache,sharing=locked \
+    uv venv /home/node/.venv \
+    && uv pip install --python /home/node/.venv/bin/python nano-pdf lancedb ${EXTRA_PIP_PKGS} \
     && chown -R node:node /home/node/.venv
 
 # playwright-core browser install

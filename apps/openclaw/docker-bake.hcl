@@ -20,7 +20,8 @@ group "default" {
 target "image" {
   inherits = ["docker-metadata-action"]
   args = {
-    VERSION = "${VERSION}"
+    VERSION  = "${VERSION}"
+    BASE_TAG = "${VERSION}"
   }
   labels = {
     "org.opencontainers.image.source" = "${SOURCE}"

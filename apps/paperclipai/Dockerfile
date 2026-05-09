@@ -9,7 +9,7 @@ ARG VERSION=latest
 FROM node:lts-trixie-slim AS agent-clis
 
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends curl \
+  && apt-get install -y --no-install-recommends ca-certificates curl \
   && rm -rf /var/lib/apt/lists/* \
   && npm install --global --prefix=/opt/extras --omit=dev \
     @google/gemini-cli@0.41.2 \

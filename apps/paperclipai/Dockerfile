@@ -20,7 +20,7 @@ RUN apt-get update \
 # Note: curl-pipe-sh is the only supported install method upstream provides.
 ARG TARGETARCH
 RUN if [ "${TARGETARCH}" = "amd64" ]; then \
-      curl https://cursor.com/install -fsS | sh \
+      curl https://cursor.com/install -fsS | bash \
       && mkdir -p /opt/extras/bin \
       && cp /root/.cursor/bin/cursor /opt/extras/bin/; \
     fi

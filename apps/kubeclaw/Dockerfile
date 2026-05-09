@@ -12,14 +12,14 @@ RUN chmod +x /workspace/install-tools.sh /workspace/install-npm-packages.sh
 RUN TARGETARCH=${TARGETARCH} PACKAGES_FILE=/workspace/packages.json OUT_BIN_DIR=/out/opt/kubeclaw/bin /workspace/install-tools.sh
 RUN PACKAGES_FILE=/workspace/packages.json OUT_PREFIX=/out/opt/kubeclaw/npm-global OUT_BIN_DIR=/out/opt/kubeclaw/bin /workspace/install-npm-packages.sh
 
-# FROM golang:1.26.3-alpine AS go-builder
-# WORKDIR /workspace
-# RUN apk add --no-cache nodejs
-# RUN mkdir -p /out/opt/kubeclaw/bin
-# COPY packages.json /workspace/packages.json
-# COPY scripts/install-go-packages.sh /workspace/install-go-packages.sh
-# RUN chmod +x /workspace/install-go-packages.sh
-# RUN PACKAGES_FILE=/workspace/packages.json OUT_BIN_DIR=/out/opt/kubeclaw/bin /workspace/install-go-packages.sh
+FROM golang:1.26.3-alpine AS go-builder
+WORKDIR /workspace
+RUN apk add --no-cache nodejs
+RUN mkdir -p /out/opt/kubeclaw/bin
+COPY packages.json /workspace/packages.json
+COPY scripts/install-go-packages.sh /workspace/install-go-packages.sh
+RUN chmod +x /workspace/install-go-packages.sh
+RUN PACKAGES_FILE=/workspace/packages.json OUT_BIN_DIR=/out/opt/kubeclaw/bin /workspace/install-go-packages.sh
 
 FROM node:24 AS qmd-builder
 WORKDIR /workspace
@@ -42,14 +42,14 @@ COPY scripts/install-uv-packages.sh /workspace/install-uv-packages.sh
 RUN chmod +x /workspace/install-uv-packages.sh
 RUN PACKAGES_FILE=/workspace/packages.json OUT_PREFIX=/out/opt/kubeclaw/uv-global OUT_BIN_DIR=/out/opt/kubeclaw/bin /workspace/install-uv-packages.sh
 
-# FROM rust:1.95.0-slim AS rust-builder
-# WORKDIR /workspace
-# RUN apt-get update && apt-get install -y --no-install-recommends nodejs npm pkg-config libssl-dev && rm -rf /var/lib/apt/lists/*
-# RUN mkdir -p /out/opt/kubeclaw/bin
-# COPY packages.json /workspace/packages.json
-# COPY scripts/install-rust-packages.sh /workspace/install-rust-packages.sh
-# RUN chmod +x /workspace/install-rust-packages.sh
-# RUN PACKAGES_FILE=/workspace/packages.json OUT_BIN_DIR=/out/opt/kubeclaw/bin /workspace/install-rust-packages.sh
+FROM rust:1.95.0-slim AS rust-builder
+WORKDIR /workspace
+RUN apt-get update && apt-get install -y --no-install-recommends nodejs npm pkg-config libssl-dev && rm -rf /var/lib/apt/lists/*
+RUN mkdir -p /out/opt/kubeclaw/bin
+COPY packages.json /workspace/packages.json
+COPY scripts/install-rust-packages.sh /workspace/install-rust-packages.sh
+RUN chmod +x /workspace/install-rust-packages.sh
+RUN PACKAGES_FILE=/workspace/packages.json OUT_BIN_DIR=/out/opt/kubeclaw/bin /workspace/install-rust-packages.sh
 
 FROM ${OPENCLAW_IMAGE}
 USER root
@@ -62,12 +62,12 @@ RUN npm install --prefix /opt/kubeclaw/deps json5@2.2.3 --no-save --no-audit --n
 
 COPY --from=tools-builder /out/opt/kubeclaw/bin /opt/kubeclaw/bin
 COPY --from=tools-builder /out/opt/kubeclaw/npm-global /opt/kubeclaw/npm-global
-# COPY --from=go-builder /out/opt/kubeclaw/bin /opt/kubeclaw/bin
+COPY --from=go-builder /out/opt/kubeclaw/bin /opt/kubeclaw/bin
 COPY --from=qmd-builder /out/opt/kubeclaw/qmd /opt/kubeclaw/qmd
 COPY --from=qmd-builder /out/opt/kubeclaw/qmd-bin /opt/kubeclaw/qmd-bin
 COPY --from=uv-builder /out/opt/kubeclaw/uv-global /opt/kubeclaw/uv-global
 COPY --from=uv-builder /out/opt/kubeclaw/bin /opt/kubeclaw/bin
-# COPY --from=rust-builder /out/opt/kubeclaw/bin /opt/kubeclaw/bin
+COPY --from=rust-builder /out/opt/kubeclaw/bin /opt/kubeclaw/bin
 
 COPY scripts/bootstrap.sh /opt/kubeclaw/bin/bootstrap.sh
 COPY scripts/merge-json5.js /opt/kubeclaw/bin/merge-json5.js

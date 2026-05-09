@@ -22,6 +22,8 @@ RUN if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
       curl https://cursor.com/install -fsS | sh \
       && mkdir -p /opt/extras/bin \
       && cp /root/.cursor/bin/cursor /opt/extras/bin/; \
+    else \
+      echo "Skipping cursor install on non-amd64 architecture"; \
     fi
 
 # ── Stage 2: production ───────────────────────────────────────────────────────

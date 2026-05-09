@@ -5,8 +5,7 @@ variable "APP" {
 }
 
 variable "VERSION" {
-  // renovate: datasource=github-releases depName=paperclipai/paperclip
-  default = "v2026.428.0"
+  default = "latest"
 }
 
 variable "SOURCE" {

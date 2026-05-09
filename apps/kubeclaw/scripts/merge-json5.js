@@ -13,7 +13,7 @@ function tryParse(text) {
     JSON5 = require('json5');
   } catch (_) {
     try {
-      JSON5 = require('/opt/kubeclaw/deps/node_modules/json5');
+      JSON5 = require('/home/node/.local/deps/node_modules/json5');
     } catch (err) {
       throw new Error(
         'Failed to parse input as strict JSON, and JSON5 parser is unavailable. ' +

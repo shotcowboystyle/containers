@@ -33,6 +33,7 @@ RUN PACKAGES_FILE=/workspace/packages.json OUT_QMD_PREFIX=/home/node/qmd OUT_QMD
 FROM ghcr.io/astral-sh/uv:latest AS uv-bin
 
 FROM python:3.13-slim AS uv-builder
+ENV PATH="/home/node/.local/bin:${PATH}"
 WORKDIR /workspace
 RUN apt-get update && apt-get install -y --no-install-recommends nodejs npm && rm -rf /var/lib/apt/lists/*
 COPY --from=uv-bin /uv /home/node/.local/bin/uv

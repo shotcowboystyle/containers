@@ -16,12 +16,12 @@ STATE_DIR="/home/node/.openclaw"
 CONFIG_DEST="$STATE_DIR/openclaw.json"
 CONFIG_SRC="/config-src/openclaw.json"
 SKILLS_DIR="$STATE_DIR/skills"
-SKILLSTACKS_SRC_DIR="/opt/kubeclaw/skillstacks"
+SKILLSTACKS_SRC_DIR="/home/node/.local/skillstacks"
 SKILLS_PATCH_JSON="$STATE_DIR/skills.generated.json"
 SKILLS_MANAGED_FILE="$STATE_DIR/skills.managed.txt"
 SKILLS_MANAGED_PREV_FILE="$STATE_DIR/skills.managed.prev.txt"
-MERGE_SCRIPT="/opt/kubeclaw/bin/merge-json5.js"
-RENDER_SKILLS_SCRIPT="/opt/kubeclaw/bin/render-skills-config.js"
+MERGE_SCRIPT="/home/node/.local/bin/merge-json5.js"
+RENDER_SKILLS_SCRIPT="/home/node/.local/bin/render-skills-config.js"
 
 safe_skill_name() {
   case "$1" in

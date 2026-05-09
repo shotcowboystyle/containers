@@ -18,12 +18,11 @@ RUN apt-get update \
 
 # Cursor is amd64-only; skip silently on other architectures.
 # Note: curl-pipe-sh is the only supported install method upstream provides.
-RUN if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
+ARG TARGETARCH
+RUN if [ "${TARGETARCH}" = "amd64" ]; then \
       curl https://cursor.com/install -fsS | sh \
       && mkdir -p /opt/extras/bin \
       && cp /root/.cursor/bin/cursor /opt/extras/bin/; \
-    else \
-      echo "Skipping cursor install on non-amd64 architecture"; \
     fi
 
 # ── Stage 2: production ───────────────────────────────────────────────────────

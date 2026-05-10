@@ -6,7 +6,7 @@ variable "APP" {
 
 variable "VERSION" {
   // renovate: datasource=github-releases depName=openclaw/openclaw
-  default = "2026.5.7-slim"
+  default = "2026.5.9-beta.1-slim"
 }
 
 variable "BASE_DIGEST" {

@@ -6,7 +6,7 @@ FROM ghcr.io/astral-sh/uv:0.7.5 AS uv-bin
 ARG BASE_REGISTRY=ghcr.io \
     BASE_OWNER=openclaw \
     BASE_REPO=openclaw \
-    BASE_TAG=2026.5.7-slim \
+    BASE_TAG=2026.5.9-beta.1-slim \
     BASE_DIGEST=sha256:1af3f457a2d5a1d210f4d95634fa5da6e23f9c0ac7b52ef4bc38e2ecf09704fd
 ARG BASE_REF=${BASE_REGISTRY}/${BASE_OWNER}/${BASE_REPO}:${BASE_TAG}@${BASE_DIGEST}
 

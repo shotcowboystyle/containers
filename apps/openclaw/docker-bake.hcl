@@ -4,13 +4,12 @@ variable "APP" {
   default = "openclaw"
 }
 
+# renovate: datasource=docker depName=ghcr.io/openclaw/openclaw
 variable "VERSION" {
-  // renovate: datasource=github-releases depName=openclaw/openclaw
-  default = "2026.5.9-beta.1-slim"
+  default = "2026.5.9-beta.1"
 }
 
 variable "BASE_DIGEST" {
-  // renovate: datasource=docker depName=ghcr.io/openclaw/openclaw
   default = "sha256:1af3f457a2d5a1d210f4d95634fa5da6e23f9c0ac7b52ef4bc38e2ecf09704fd"
 }
 
@@ -26,7 +25,6 @@ target "image" {
   inherits = ["docker-metadata-action"]
   args = {
     VERSION     = "${VERSION}"
-    BASE_TAG    = "${VERSION}"
     BASE_DIGEST = "${BASE_DIGEST}"
   }
   labels = {
@@ -36,12 +34,12 @@ target "image" {
 
 target "image-local" {
   inherits = ["image"]
-  output = ["type=docker"]
-  tags = ["${APP}:${VERSION}"]
+  output   = ["type=docker"]
+  tags     = ["${APP}:${VERSION}"]
 }
 
 target "image-all" {
-  inherits = ["image"]
+  inherits  = ["image"]
   platforms = [
     "linux/amd64",
     "linux/arm64"

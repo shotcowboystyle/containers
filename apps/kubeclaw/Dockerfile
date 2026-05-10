@@ -70,12 +70,13 @@ COPY --from=uv-builder /home/node/.uv-global /home/node/.uv-global
 COPY --from=uv-builder /home/node/.local/bin /home/node/.local/bin
 COPY --from=rust-builder /home/node/.cargo /home/node/.cargo
 
-COPY scripts/bootstrap.sh /home/node/.local/bin/bootstrap.sh
+RUN mkdir -p /opt/kubeclaw/bin
+COPY scripts/bootstrap.sh /opt/kubeclaw/bin/bootstrap.sh
 COPY scripts/merge-json5.js /home/node/.local/bin/merge-json5.js
 COPY scripts/render-skills-config.js /home/node/.local/bin/render-skills-config.js
 COPY charts/kubeclaw/skillstacks /home/node/.local/skillstacks
 
-RUN chmod 0555 /home/node/.local/bin/bootstrap.sh /home/node/.local/bin/merge-json5.js /home/node/.local/bin/render-skills-config.js
+RUN chmod 0555 /opt/kubeclaw/bin/bootstrap.sh /home/node/.local/bin/merge-json5.js /home/node/.local/bin/render-skills-config.js
 
 RUN chown -R 1000:1000 /home/node
 

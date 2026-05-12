@@ -48,7 +48,11 @@ RUN case "${TARGETARCH}" in \
         -o /tmp/gogcli.tar.gz \
     && tar -xzf /tmp/gogcli.tar.gz -C /tmp gog \
     && install -m 0755 /tmp/gog /usr/local/bin/gog \
+    && ./tmp/gog/build-safe.sh /tmp/gog/safety-profiles/agent-safe.yaml -o /usr/local/bin/gog-agent-safe \
+    && ./tmp/gog/build-safe.sh /tmp/gog/safety-profiles/readonly.yaml -o /usr/local/bin/gog-readonly \
     && ln -sf gog /usr/local/bin/gogcli \
+    && ln -sf gog-agent-safe /usr/local/bin/gog-agent-safe \
+    && ln -sf gog-readonly /usr/local/bin/gog-readonly \
     && curl -fsSL "https://github.com/openhue/openhue-cli/releases/download/${OPENHUE_VERSION}/openhue_Linux_${openhue_arch}.tar.gz" \
         -o /tmp/openhue.tar.gz \
     && tar -xzf /tmp/openhue.tar.gz -C /tmp openhue \

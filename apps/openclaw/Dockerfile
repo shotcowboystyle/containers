@@ -135,10 +135,8 @@ RUN mkdir -p /app/config /home/node/.openclaw/config /home/node/.openclaw/extens
 
 # Optional baked extensions; runtime overlay at /home/node/.openclaw/extensions
 # stays writable for Helm-mounted PVCs.
+USER node
 RUN if [ -n "${OPENCLAW_EXTENSIONS}" ]; then \
         openclaw extensions install ${OPENCLAW_EXTENSIONS} || \
             { echo "ERROR: failed to install extensions: ${OPENCLAW_EXTENSIONS}" >&2; exit 1; }; \
-        chown -R node:node /home/node/.openclaw; \
     fi
-
-USER node

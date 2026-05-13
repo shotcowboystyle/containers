@@ -6,11 +6,11 @@ variable "APP" {
 
 # renovate: datasource=docker depName=ghcr.io/openclaw/openclaw
 variable "VERSION" {
-  default = "2026.5.12-beta.1"
+  default = "2026.5.12-beta.4"
 }
 
 variable "BASE_DIGEST" {
-  default = "sha256:5c046c2c45fc222c1831ae9f202c8655678fe5777cb7ef378881b68f35601a02"
+  default = "sha256:51c34327376f9a5ad998a6ce246a2591141f4e605b7cb854adea11e5d33576ab"
 }
 
 variable "SOURCE" {
@@ -26,6 +26,7 @@ target "image" {
   args = {
     VERSION     = "${VERSION}"
     BASE_DIGEST = "${BASE_DIGEST}"
+    OPENCLAW_EXTENSIONS = "acpx anthropic brave browser canvas codex diffs discord document-extract duckduckgo exa file-transfer google litellm llm-task lobster memory-core memory-lancedb memory-wiki oc-path ollama openai openrouter openshell perplexity qa-channel qa-lab searxng sqlang skill-workshop tavily tokenjuice tts-local-cli vercel-ai-gateway vllm voice-call voyage web-readability webhooks xai zai @martian-engineering/lossless-claw @opik/opik-openclaw"
   }
   labels = {
     "org.opencontainers.image.source" = "${SOURCE}"
@@ -40,9 +41,6 @@ target "image-local" {
 
 target "image-all" {
   inherits  = ["image"]
-  args = {
-    OPENCLAW_EXTENSIONS = "acpx anthropic brave browser canvas codex diffs discord document-extract duckduckgo exa file-transfer google litellm llm-task lobster memory-core memory-lancedb memory-wiki oc-path ollama openai openrouter openshell perplexity qa-channel qa-lab searxng sqlang skill-workshop tavily tokenjuice tts-local-cli vercel-ai-gateway vllm voice-call voyage web-readability webhooks xai zai @martian-engineering/lossless-claw @opik/opik-openclaw"
-  }
   platforms = [
     "linux/amd64",
     "linux/arm64"

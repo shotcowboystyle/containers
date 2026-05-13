@@ -27,6 +27,7 @@ ARG OPENCLAW_EXTENSIONS=""
 
 ENV NODE_ENV=production \
     TERM=xterm-256color \
+    OPENCLAW_DEBUG=1 \
     PLAYWRIGHT_BROWSERS_PATH=/home/node/.cache/ms-playwright \
     PNPM_HOME=/home/node/.npm-global \
     NPM_CONFIG_PREFIX=/home/node/.npm-global \
@@ -136,7 +137,7 @@ RUN mkdir -p /app/config /home/node/.openclaw/config /home/node/.openclaw/extens
 # Optional baked extensions; runtime overlay at /home/node/.openclaw/extensions
 # stays writable for Helm-mounted PVCs.
 USER node
-RUN if [ -n "${OPENCLAW_EXTENSIONS}" ]; then \
-        openclaw extensions install ${OPENCLAW_EXTENSIONS} || \
-            { echo "ERROR: failed to install extensions: ${OPENCLAW_EXTENSIONS}" >&2; exit 1; }; \
-    fi
+# RUN if [ -n "${OPENCLAW_EXTENSIONS}" ]; then \
+#         openclaw extensions install ${OPENCLAW_EXTENSIONS} || \
+#             { echo "ERROR: failed to install extensions: ${OPENCLAW_EXTENSIONS}" >&2; exit 1; }; \
+#     fi

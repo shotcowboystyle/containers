@@ -93,7 +93,7 @@ FROM ${NODE_IMAGE} AS runtime
 
 LABEL org.opencontainers.image.description="Open Design daemon + static web"
 
-RUN apk add --no-cache tini curl bash \
+RUN apk add --no-cache tini curl bash git \
     && addgroup -S -g 1001 open-design \
     && adduser -S -D -h /home/open-design -u 1001 -G open-design open-design \
     && mkdir -p /home/open-design \

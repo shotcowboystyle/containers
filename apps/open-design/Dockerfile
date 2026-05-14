@@ -93,9 +93,27 @@ FROM ${NODE_IMAGE} AS runtime
 
 LABEL org.opencontainers.image.description="Open Design daemon + static web"
 
-RUN apk add --no-cache tini \
+RUN apk add --no-cache tini curl bash \
     && addgroup -S -g 1001 open-design \
-    && adduser -S -D -H -u 1001 -G open-design open-design
+    && adduser -S -D -h /home/open-design -u 1001 -G open-design open-design \
+    && mkdir -p /home/open-design \
+    && chown open-design:open-design /home/open-design
+
+ENV PNPM_HOME=/usr/local/share/pnpm \
+    PATH=/usr/local/share/pnpm:/home/open-design/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# Install gemini-cli globally via pnpm into a system-wide location.
+RUN corepack enable \
+    && corepack prepare pnpm@10.33.2 --activate \
+    && mkdir -p "$PNPM_HOME" \
+    && pnpm add -g @google/gemini-cli \
+    && chmod -R a+rX "$PNPM_HOME"
+
+# Install Claude Code and Cursor Agent into the open-design user's home.
+RUN HOME=/home/open-design mkdir -p /home/open-design/.local/bin \
+    && HOME=/home/open-design bash -c 'curl -fsSL https://claude.ai/install.sh | bash' \
+    && HOME=/home/open-design bash -c 'curl -fsS https://cursor.com/install | bash' \
+    && chown -R open-design:open-design /home/open-design
 
 WORKDIR /app
 
@@ -113,7 +131,8 @@ RUN mkdir -p /app/.od && chown -R open-design:open-design /app
 ENV NODE_ENV=production \
     NODE_OPTIONS=--max-old-space-size=192 \
     OD_BIND_HOST=0.0.0.0 \
-    OD_PORT=7456
+    OD_PORT=7456 \
+    HOME=/home/open-design
 
 EXPOSE 7456
 

@@ -52,6 +52,7 @@ RUN --mount=type=cache,target=/var/cache/apt,id=apt-cache,sharing=locked \
         jq \
         ripgrep \
         rsync \
+        sqlite3 \
         tesseract-ocr \
         tmux \
         vim \

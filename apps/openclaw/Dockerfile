@@ -5,8 +5,8 @@ ARG UV_VERSION=0.7.5
 # Upstream openclaw base — we always extend the `${VERSION}-slim` variant,
 # pinned by digest for reproducibility.
 # renovate: datasource=docker depName=ghcr.io/openclaw/openclaw
-ARG VERSION=2026.5.27
-ARG BASE_DIGEST=sha256:5df2bb0d51612571ad7b78c748bbddb345c432c17ad53be737aca051a99ed241
+ARG VERSION=2026.6.5
+ARG BASE_DIGEST=sha256:037f49ba1595be9502fb345138d727cd0cfaecf1392cbe0cfe053fb4681386cd
 ARG OPENCLAW_BASE=ghcr.io/openclaw/openclaw:${VERSION}-slim@${BASE_DIGEST}
 
 FROM ghcr.io/astral-sh/uv:${UV_VERSION} AS uv-bin

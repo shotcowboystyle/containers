@@ -44,7 +44,7 @@ COPY --from=source /src/package.json /src/pnpm-lock.yaml /src/pnpm-workspace.yam
 COPY --from=source /src/scripts/postinstall.mjs ./scripts/postinstall.mjs
 COPY --from=source /src/packages ./packages
 COPY --from=source /src/tools ./tools
-COPY --from=source /src/apps/daemon/package.json ./apps/daemon/package.json
+COPY --from=source /src/apps/daemon ./apps/daemon
 COPY --from=source /src/apps/web/package.json ./apps/web/package.json
 COPY --from=source /src/e2e/package.json ./e2e/package.json
 

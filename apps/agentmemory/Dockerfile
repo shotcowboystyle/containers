@@ -1,0 +1,62 @@
+# syntax=docker/dockerfile:1
+
+ARG VERSION
+ARG III_VERSION
+
+FROM docker.io/library/node:24-slim
+
+ARG TARGETARCH
+ARG VERSION
+ARG III_VERSION
+
+ENV \
+    AGENTMEMORY_DATA_DIR=/data \
+    AGENTMEMORY_HMAC_FILE=/data/.hmac \
+    III_REST_PORT=3111 \
+    NODE_ENV=production
+
+USER root
+WORKDIR /app
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        ca-certificates \
+        catatonit \
+        curl \
+        openssl \
+        tzdata && \
+    case "${TARGETARCH}" in \
+        amd64) iii_target="x86_64-unknown-linux-gnu" ;; \
+        arm64) iii_target="aarch64-unknown-linux-gnu" ;; \
+        *) echo "unsupported arch ${TARGETARCH}"; exit 1 ;; \
+    esac && \
+    curl -fsSL "https://github.com/iii-hq/iii/releases/download/iii%2Fv${III_VERSION}/iii-${iii_target}.tar.gz" \
+        | tar -xz -C /usr/local/bin && \
+    chmod +x /usr/local/bin/iii && \
+    iii --version && \
+    npm install -g --omit=optional --no-fund --no-audit \
+        "@agentmemory/agentmemory@${VERSION}" && \
+    am_dist="/usr/local/lib/node_modules/@agentmemory/agentmemory/dist" && \
+    cp "${am_dist}/iii-config.docker.yaml" "${am_dist}/iii-config.yaml" && \
+    grep -q 'file_path: /data/state_store.db' "${am_dist}/iii-config.yaml" || \
+        { echo "ERROR: iii-config.yaml is not using absolute /data paths; the engine would persist to the ephemeral overlay (/app/data) and lose all memory on restart" >&2; exit 1; } && \
+    find /usr/local/lib/node_modules/@agentmemory/agentmemory \
+        -type f \( -name '*.js' -o -name '*.mjs' -o -name '*.cjs' \) -print0 \
+        | xargs -0 -r sed -i -E 's/\.listen\(([A-Za-z_$][A-Za-z0-9_$]*), ?"127\.0\.0\.1"/.listen(\1, "0.0.0.0"/g' && \
+    if find /usr/local/lib/node_modules/@agentmemory/agentmemory \
+        -type f \( -name '*.js' -o -name '*.mjs' -o -name '*.cjs' \) -print0 \
+        | xargs -0 -r grep -lE '\.listen\([A-Za-z_$][A-Za-z0-9_$]*, ?"127\.0\.0\.1"' | grep -q .; then \
+        echo "ERROR: a 127.0.0.1 .listen() survived the rebind patch; the upstream code changed" >&2; exit 1; \
+    fi && \
+    mkdir -p /data && \
+    chown -R node:node /data /app && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /root/.npm
+
+COPY --chmod=0755 entrypoint.sh /entrypoint.sh
+
+USER node:node
+
+EXPOSE 3111 3112 3113
+
+ENTRYPOINT ["/usr/bin/catatonit", "--", "/entrypoint.sh"]

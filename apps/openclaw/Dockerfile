@@ -5,8 +5,8 @@ ARG UV_VERSION=0.7.5
 # Upstream openclaw base — we always extend the `${VERSION}-slim` variant,
 # pinned by digest for reproducibility.
 # renovate: datasource=docker depName=ghcr.io/openclaw/openclaw
-ARG VERSION=2026.6.5
-ARG BASE_DIGEST=sha256:037f49ba1595be9502fb345138d727cd0cfaecf1392cbe0cfe053fb4681386cd
+ARG VERSION=2026.6.6
+ARG BASE_DIGEST=sha256:4826ca6157377e93463786d5c16852e34eede9f4bd4be55e3773cdc509762857
 ARG OPENCLAW_BASE=ghcr.io/openclaw/openclaw:${VERSION}-slim@${BASE_DIGEST}
 
 FROM ghcr.io/astral-sh/uv:${UV_VERSION} AS uv-bin
@@ -124,7 +124,7 @@ RUN --mount=type=cache,target=/pw-cache,id=pw-browsers,sharing=locked \
     && test -s /tmp/chrome_binary_path
 
 # ── mcporter playwright config ──────────────────────────────────────────────
-RUN mkdir -p /app/config /home/node/.openclaw/config /home/node/.openclaw/extensions \
+RUN mkdir -p /app/config /home/node/.openclaw/config /home/node/.openclaw/extensions /home/node/.openclaw/logs /home/node/.openclaw/state \
     && ln -sf /home/node/.openclaw/config/mcporter.json /app/config/mcporter.json \
     && chown -R node:node /home/node/.openclaw /app/config \
     && mcporter config add playwright \

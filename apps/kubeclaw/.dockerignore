@@ -1,9 +1,0 @@
-# Kubeclaw needs additional directories beyond the defaults
-/*
-!charts/
-!defaults/
-!docker-bake.hcl
-!Dockerfile
-!packages.json
-!scripts/
-!entrypoint.sh

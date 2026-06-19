@@ -6,7 +6,7 @@ variable "APP" {
 
 # renovate: datasource=github-releases depName=nexu-io/open-design
 variable "VERSION" {
-  default = "0.10.0"
+  default = "0.11.0"
 }
 
 # renovate: datasource=docker depName=docker.io/library/node

@@ -6,7 +6,7 @@ ARG NODE_DIGEST=sha256:d1b3b4da11eefd5941e7f0b9cf17783fc99d9c6fc34884a665f40a06d
 ARG NODE_IMAGE=docker.io/library/node:${NODE_VERSION}@${NODE_DIGEST}
 
 # renovate: datasource=github-releases depName=nexu-io/open-design
-ARG VERSION=0.10.0
+ARG VERSION=0.11.0
 
 # ── Stage 1: upstream source checkout ───────────────────────────────────────
 FROM ${NODE_IMAGE} AS source
@@ -14,7 +14,7 @@ ARG VERSION
 RUN apk add --no-cache git
 WORKDIR /src
 RUN git clone --depth 1 --branch open-design-v${VERSION} \
-        https://github.com/nexu-io/open-design.git . \
+    https://github.com/nexu-io/open-design.git . \
     && rm -rf .git
 
 # ── Stage 2: build daemon + web ─────────────────────────────────────────────
@@ -60,33 +60,33 @@ RUN pnpm --filter @open-design/daemon build \
     && pnpm --filter @open-design/daemon deploy --legacy --prod /app/deploy/daemon \
     && pnpm store prune \
     && rm -rf \
-        /root/.cache \
-        /root/.local/share/pnpm/store \
-        /app/deploy/daemon/node_modules/.cache \
-        /app/deploy/daemon/node_modules/@types \
-        /app/deploy/daemon/node_modules/.pnpm/@types+* \
-        /app/deploy/daemon/node_modules/.pnpm/better-sqlite3@*/node_modules/better-sqlite3/deps \
-        /app/deploy/daemon/node_modules/.pnpm/better-sqlite3@*/node_modules/better-sqlite3/src \
+    /root/.cache \
+    /root/.local/share/pnpm/store \
+    /app/deploy/daemon/node_modules/.cache \
+    /app/deploy/daemon/node_modules/@types \
+    /app/deploy/daemon/node_modules/.pnpm/@types+* \
+    /app/deploy/daemon/node_modules/.pnpm/better-sqlite3@*/node_modules/better-sqlite3/deps \
+    /app/deploy/daemon/node_modules/.pnpm/better-sqlite3@*/node_modules/better-sqlite3/src \
     && find /app/deploy/daemon/node_modules -type d \( \
-        -name test -o \
-        -name tests -o \
-        -name "__tests__" -o \
-        -name docs -o \
-        -name doc -o \
-        -name example -o \
-        -name examples -o \
-        -name ".github" \
-       \) -prune -exec rm -rf '{}' + \
+    -name test -o \
+    -name tests -o \
+    -name "__tests__" -o \
+    -name docs -o \
+    -name doc -o \
+    -name example -o \
+    -name examples -o \
+    -name ".github" \
+    \) -prune -exec rm -rf '{}' + \
     && find /app/deploy/daemon/node_modules -type f \( \
-        -name "*.md" -o \
-        -name "*.markdown" -o \
-        -name "*.d.ts" -o \
-        -name "*.d.cts" -o \
-        -name "*.d.mts" -o \
-        -name "*.map" -o \
-        -name "*.tsbuildinfo" -o \
-        -name "binding.gyp" \
-       \) -delete
+    -name "*.md" -o \
+    -name "*.markdown" -o \
+    -name "*.d.ts" -o \
+    -name "*.d.cts" -o \
+    -name "*.d.mts" -o \
+    -name "*.map" -o \
+    -name "*.tsbuildinfo" -o \
+    -name "binding.gyp" \
+    \) -delete
 
 # ── Stage 3: runtime ────────────────────────────────────────────────────────
 FROM ${NODE_IMAGE} AS runtime

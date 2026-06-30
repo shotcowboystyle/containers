@@ -93,7 +93,7 @@ FROM ${NODE_IMAGE} AS runtime
 
 LABEL org.opencontainers.image.description="Open Design daemon + static web"
 
-RUN apk add --no-cache tini curl bash git \
+RUN apk add --no-cache tini poppler-utils curl bash git \
     && addgroup -S -g 1001 open-design \
     && adduser -S -D -h /home/open-design -u 1001 -G open-design open-design \
     && mkdir -p /home/open-design \
@@ -123,6 +123,7 @@ COPY --from=source --chown=open-design:open-design /src/skills              ./sk
 COPY --from=source --chown=open-design:open-design /src/design-systems      ./design-systems
 COPY --from=source --chown=open-design:open-design /src/craft               ./craft
 COPY --from=source --chown=open-design:open-design /src/prompt-templates    ./prompt-templates
+COPY --from=source --chown=open-design:open-design /src/plugins/_official   ./plugins/_official
 COPY --from=source --chown=open-design:open-design /src/assets/frames       ./assets/frames
 COPY --from=source --chown=open-design:open-design /src/assets/community-pets ./assets/community-pets
 

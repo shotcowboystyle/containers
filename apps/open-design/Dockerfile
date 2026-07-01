@@ -6,7 +6,7 @@ ARG NODE_DIGEST=sha256:d1b3b4da11eefd5941e7f0b9cf17783fc99d9c6fc34884a665f40a06d
 ARG NODE_IMAGE=docker.io/library/node:${NODE_VERSION}@${NODE_DIGEST}
 
 # renovate: datasource=github-releases depName=nexu-io/open-design
-ARG VERSION=0.12.1
+ARG VERSION=0.12.0
 
 # ── Stage 1: upstream source checkout ───────────────────────────────────────
 FROM ${NODE_IMAGE} AS source

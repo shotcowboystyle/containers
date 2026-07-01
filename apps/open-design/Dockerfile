@@ -6,7 +6,7 @@ ARG NODE_DIGEST=sha256:d1b3b4da11eefd5941e7f0b9cf17783fc99d9c6fc34884a665f40a06d
 ARG NODE_IMAGE=docker.io/library/node:${NODE_VERSION}@${NODE_DIGEST}
 
 # renovate: datasource=github-releases depName=nexu-io/open-design
-ARG VERSION=0.12.0
+ARG VERSION=0.12.1
 
 # ── Stage 1: upstream source checkout ───────────────────────────────────────
 FROM ${NODE_IMAGE} AS source
@@ -44,7 +44,7 @@ COPY --from=source /src/package.json /src/pnpm-lock.yaml /src/pnpm-workspace.yam
 COPY --from=source /src/scripts/postinstall.mjs ./scripts/postinstall.mjs
 COPY --from=source /src/packages ./packages
 COPY --from=source /src/tools ./tools
-COPY --from=source /src/apps/daemon ./apps/daemon
+COPY --from=source /src/apps/daemon/package.json ./apps/daemon/package.json
 COPY --from=source /src/apps/web/package.json ./apps/web/package.json
 COPY --from=source /src/e2e/package.json ./e2e/package.json
 

@@ -36,6 +36,7 @@ A monorepo of opinionated, reproducible OCI container images built and published
 | `open-design` | `node:24-alpine` | Clones `nexu-io/open-design` at a renovate-tracked tag and builds the daemon + web app via pnpm in a multi-stage build. |
 | `openclaw` | `ghcr.io/openclaw/openclaw:<ver>-slim` (pinned by digest) | Extends upstream slim with a Python/uv venv, Go toolchain, Docker CLI, `gh`, Playwright + Chromium, and a curated MCP extension set passed via `OPENCLAW_EXTENSIONS`. |
 | `openclaw-full` | `ghcr.io/${VENDOR}/openclaw:${BASE_TAG}` | Layers gemini-cli, summarize, `xurl`, `gifgrep`, `goplaces`, `gogcli`, and `openhue` on top of `openclaw`. |
+| `opencode` | `alpine:3.23` (pinned by digest) | Standalone OpenCode CLI (musl binary from `@opencode/cli`) with git, `gh`, ripgrep, fd, jq, yq; runs as non-root UID 1000. |
 | `paperclipai` | `ghcr.io/paperclipai/paperclip:<ver>` | Adds nano/tini/vim plus gemini-cli, pi-coding-agent, and cursor's `agent` under `/opt/extras`; ships baseline `.gitconfig` and opencode config. |
 
 Each app directory contains:

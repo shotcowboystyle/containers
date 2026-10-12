@@ -13,7 +13,7 @@ FROM ghcr.io/astral-sh/uv:${UV_VERSION} AS uv-bin
 
 FROM ${OPENCLAW_BASE}
 
-LABEL org.opencontainers.image.description="OpenClaw slim — Python/uv venv, Go toolchain, Docker CLI, gh CLI, Playwright+Chromium, MCP tools, FreeRide gateway"
+LABEL org.opencontainers.image.description="OpenClaw slim — Python/uv venv, Go toolchain, Docker CLI, gh CLI, Playwright+Chromium, MCP tools"
 
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
@@ -24,8 +24,6 @@ ARG GH_VERSION=2.61.0
 ARG GO_VERSION=1.26.3
 ARG OPENCLAW_DOCKER_GPG_FINGERPRINT="9DC858229FC7DD38854AE2D88D81803C0EBFCD88"
 ARG OPENCLAW_EXTENSIONS=""
-# renovate: datasource=pypi depName=freeride-gateway
-ARG FREERIDE_VERSION=0.4.0a24
 
 ENV NODE_ENV=production \
     TERM=xterm-256color \
@@ -107,12 +105,6 @@ RUN --mount=type=cache,target=/root/.cache/uv,id=uv-cache,sharing=locked \
     faster-whisper \
     && chown -R node:node /home/node/.venv
 
-# ── FreeRide gateway (isolated uv tool venv, avoids venv dep clashes) ───────
-RUN --mount=type=cache,target=/root/.cache/uv,id=uv-cache,sharing=locked \
-    UV_TOOL_DIR=/opt/uv-tools UV_TOOL_BIN_DIR=/usr/local/bin UV_PYTHON_INSTALL_DIR=/opt/uv-python \
-    uv tool install --prerelease=allow "freeride-gateway==${FREERIDE_VERSION}" \
-    && freeride --version
-
 # ── npm globals via pnpm ────────────────────────────────────────────────────
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store,id=pnpm-store,sharing=locked \
     mkdir -p "$PNPM_HOME" \
@@ -151,11 +143,3 @@ USER node
 #             { echo "ERROR: failed to install extensions: ${OPENCLAW_EXTENSIONS}" >&2; exit 1; }; \
 #     fi
 
-# FreeRide gateway runs on 127.0.0.1:11343 next to the OpenClaw gateway.
-# Provider keys come from env (any one is enough; _2/_3 suffixes rotate keys):
-#   OPENROUTER_API_KEY GROQ_API_KEY NVIDIA_API_KEY HF_TOKEN CEREBRAS_API_KEY
-#   CLOUDFLARE_API_TOKEN+CLOUDFLARE_ACCOUNT_ID OLLAMA_BASE_URL
-# FREERIDE_BIND_OPENCLAW=1 points OpenClaw at it; FREERIDE_HOST/FREERIDE_PORT override bind.
-COPY --chmod=0755 entrypoint.sh /usr/local/bin/openclaw-entrypoint.sh
-ENTRYPOINT ["tini", "-s", "--", "/usr/local/bin/openclaw-entrypoint.sh"]
-CMD ["node", "openclaw.mjs", "gateway"]

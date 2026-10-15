@@ -263,6 +263,7 @@ jobs:
           app: ${{ inputs.app }}
           image: ghcr.io/${{ github.repository_owner }}/${{ inputs.app }}@${{ needs.merge.outputs.digest }}
           token: ${{ github.token }}
+          openrouter-api-key: ${{ secrets.OPENROUTER_API_KEY }}
 
       - name: Get App Size Diff
         uses: ./.github/actions/app-size-diff

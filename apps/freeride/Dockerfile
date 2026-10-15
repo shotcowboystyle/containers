@@ -8,7 +8,9 @@ ENV PIP_NO_CACHE_DIR=1 \
     HOME=/home/freeride
 
 RUN pip install "freeride-gateway==${VERSION}" \
-    && useradd -m -u 1000 -d "${HOME}" freeride
+    && useradd -m -u 1000 -d "${HOME}" freeride \
+    && mkdir -p "${HOME}/.openclaw" \
+    && chown freeride:freeride "${HOME}/.openclaw"
 
 USER freeride
 WORKDIR /home/freeride
@@ -19,5 +21,8 @@ RUN freeride --version
 #   CLOUDFLARE_API_TOKEN+CLOUDFLARE_ACCOUNT_ID OLLAMA_BASE_URL
 # The gateway ignores inbound auth: restrict who can reach :11343 (e.g. NetworkPolicy).
 EXPOSE 11343
-ENTRYPOINT ["freeride"]
+# Primary/Fallbacks config lives here; mount persistent storage to keep it across restarts.
+VOLUME /home/freeride/.openclaw
+# Re-pick models before serving; `|| true` so an OpenRouter outage doesn't block startup.
+ENTRYPOINT ["/bin/sh", "-c", "if [ \"$1\" = serve ]; then freeride auto || true; fi; exec freeride \"$@\"", "--"]
 CMD ["serve", "--host", "0.0.0.0", "--port", "11343"]

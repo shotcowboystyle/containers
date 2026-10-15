@@ -13,6 +13,9 @@ inputs:
   token:
     description: GitHub Token
     required: true
+  openrouter-api-key:
+    description: OpenRouter API key for apps whose tests call OpenRouter
+    required: false
 
 runs:
   using: composite
@@ -27,5 +30,6 @@ runs:
       env:
         APP: ${{ inputs.app }}
         TEST_IMAGE: ${{ inputs.image }}
+        OPENROUTER_API_KEY: ${{ inputs.openrouter-api-key }}
       run: |-
         go test -v ./apps/${APP}/...

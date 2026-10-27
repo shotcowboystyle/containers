@@ -6,11 +6,11 @@ variable "APP" {
 
 # renovate: datasource=docker depName=ghcr.io/openclaw/openclaw
 variable "VERSION" {
-  default = "2026.10.4"
+  default = "2026.10.7"
 }
 
 variable "BASE_DIGEST" {
-  default = "sha256:614004ec2cf2e6095124ea544dc8d950c49306aef445a1fc300b88717e24261a"
+  default = "sha256:fb26f0841659dc757f23feec9adeab51f11d76779a409db5d22e191b43841afa"
 }
 
 variable "SOURCE" {

@@ -23,11 +23,13 @@ ARG GOGCLI_VERSION=0.16.0
 USER root
 
 # ── npm-based niche tools ───────────────────────────────────────────────────
-RUN --mount=type=cache,target=/root/.local/share/pnpm/store,id=pnpm-store,sharing=locked \
-    pnpm add -g \
+# Installed under /usr/local (not $PNPM_HOME) so the bins survive a volume
+# mounted over /home/node at runtime, same as the Go tools below.
+RUN --mount=type=cache,target=/root/.npm,id=npm-cache,sharing=locked \
+    npm install -g --prefix /usr/local --no-fund --no-audit \
         @google/gemini-cli \
         @steipete/summarize \
-    && chown -R node:node "$PNPM_HOME"
+    && command -v gemini summarize
 
 # ── Go-installed niche tools (one module per `go install`) ──────────────────
 RUN --mount=type=cache,target=/root/.cache/go-build,id=go-build,sharing=locked \

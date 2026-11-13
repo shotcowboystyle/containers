@@ -9,7 +9,7 @@ variable "APP" {
 # matching slim base.
 # renovate: datasource=docker depName=ghcr.io/openclaw/openclaw
 variable "VERSION" {
-  default = "2026.11.2"
+  default = "2026.11.3"
 }
 
 variable "SOURCE" {
